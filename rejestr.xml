@@ -1,0 +1,16 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+    <!-- tylko to moze byc w logu w chwili wykonania operacji sync -->
+    <include file="release_000/zastany.xml" relativeToChangelogFile="true" />
+
+    <!-- dopisujemy linijke w ramach rozwoju -->
+    <!-- lub komentujemy , gdy wycofano  -->
+    <!--<include file="release_001/zmiany-ddl.xml" relativeToChangelogFile="true" />-->
+
+    <!-- <include file="release_002/zmiany-ddl.xml" relativeToChangelogFile="true" /> -->
+
+
+</databaseChangeLog>

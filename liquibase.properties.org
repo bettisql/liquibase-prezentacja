@@ -1,0 +1,7 @@
+# jdbc url wskazujacy na baze danych
+url:jdbc:sqlserver://192.168.1.100:1433;database=liq_lab1;encrypt=true;trustServerCertificate=true;
+# user bazodanowy, na tyle mocny aby zmieniac model danych (odpalac DDL-e)
+username:xxx
+# no i jego haslo
+password:xxx
+

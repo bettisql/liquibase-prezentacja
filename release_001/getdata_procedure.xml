@@ -1,0 +1,27 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet author="Beata" id="rel_001_JIRA-12345">
+        <sql>
+-- nowa wersja w/g nowych wymagan
+create or alter procedure GetNames
+as
+begin
+    set nocount on
+    select ID,NAME from TABELA_1 order by ID
+end
+        </sql>
+        <rollback>
+            <sql>
+-- poprzednia wersja, do ktorej wrocimy na okazje rollback
+create or alter procedure GetNames
+as
+begin
+    set nocount on
+    select ID,NAME from TABELA_1
+end
+            </sql>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

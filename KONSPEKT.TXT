@@ -1,0 +1,87 @@
+Zawartość skryptu lqbrun.sh w folderze bin
+
+#!/bin/bash
+# odpal kontener       zamapuj biezacy folder
+# usun po wykonaniu    na /liquibase/changelog         nazwa obrazu z DockerHub        wskazanie na plik z konfiguracja do bazy         wskazanie na plik zmian      inne parametry
+docker run --rm        -v $(pwd):/liquibase/changelog   liquibase/liquibase           --defaultsFile=changelog/liquibase.properties    --changeLogFile=changelog/$1    $2
+
+
+-------------------------------------------
+0. stan inicjalny, takie obiekty bazodanowe zastaliśmy na początku. Musimy utrwalić je w rejestrze
+
+CREATE TABLE TABELA_1 (
+	ID int NOT NULL,
+	NAME varchar(100) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL
+	CONSTRAINT TABELA_1_PK PRIMARY KEY (ID)
+);
+
+create or alter procedure GetNames
+as
+begin
+    set nocount on
+    select ID,NAME from TABELA_1
+end
+
+-------------------------------------------
+1. pobranie stanu as-is bazy do pliku zastany.xml do foldera release_000 <--- to nasz folder inicjalny, wdrożenie zerowe
+
+			lqbrun.sh release_000/zastany.xml "generate-changelog"
+
+Zauważamy, że liquid zrzucił tabele, ale nie umiał procedury składowanej.
+Wersja free nie zapewnia ekstrakcji procedur, funkcji i triggerów.
+
+-------------------------------------------
+2. synchronizacja stanu inicjalnego
+
+tworzymy plik rejestr.xml i w nim odwłołujemy się do release_000/zastany.xml
+wykonujemy operacje synchronnizacji, ktora zainicjuje tabele sledzące zmiany w naszej bazie
+
+			lqbrun.sh rejestr.xml "changelog-sync"
+
+warto teraz wejść na bazę LIQ_LAB1 i wykonać
+select * from LIQ_LAB1.dbo.DATABASECHANGELOG
+zboaczymy tabele Liquida, w powyższej - będzie zarejestrowana nasza inicjalna zmiana
+
+tagujemy zmianę dla porządku i na wypadek, gdyby była potrzeba powrotu do tego stanu bazy
+
+			lqbrun.sh rejestr.xml "tag --tag=REL_000"
+
+-------------------------------------------
+3. zmiana biznesowa na release REL_001
+Przygotowujemy pliki zmian w folderze REL_001
+Dopisujemy plik zmian do głównego rejestr.xml !!
+Podgląd pliku rejestr.xml
+
+			lqbrun.sh rejestr.xml "update"
+
+i po release tagujemy
+
+			lqbrun.sh rejestr.xml "tag --tag=REL_001"
+
+jest decyzja odgórna że wycofujemy release_001
+
+rollback tych zmian (usuwamy skutki REL_001) czyli wracamy na poziom REL_000
+
+			lqbrun.sh rejestr.xml "rollback --tag=REL_000"
+
+-- pokazac≤ że przywrocono procedure
+-- pokazac, ze select * form DATABASECHANGELOG nie zawiera rekordu z REL_001
+-- oznacza to , że jak teraz puscimy "update" to 001 nam wróci!!!!
+
+należy teraz zakomentować/usunąć linijkę z rel_001 z glownego rejstr.xml !!!!!
+
+-------------------------------------------
+4. robimy release_002
+
+modyfikacja TABELA_1 oraz dodanie TABELA_2
+Zmiany trzymamy w skryptach rel_002 ...pokazac!!
+
+składamy całość w pliki xml w folderze, dopisujemy sie do rejestr.xml ze swoim wsadem ..pokazać!
+
+			lqbrun.sh rejestr.xml "update"
+
+			lqbrun.sh rejestr.xml "tag --tag=REL_002"
+
+#fin
+
+Liquibase uses the DATABASECHANGELOGLOCK table to ensure only one instance of Liquibase runs at a time.
