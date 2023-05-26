@@ -5,7 +5,7 @@ Zawartość skryptu lqbrun.sh w folderze bin
 # usun po wykonaniu    na /liquibase/changelog         nazwa obrazu z DockerHub        wskazanie na plik z konfiguracja do bazy         wskazanie na plik zmian      inne parametry
 docker run --rm        -v $(pwd):/liquibase/changelog   liquibase/liquibase           --defaultsFile=changelog/liquibase.properties    --changeLogFile=changelog/$1    $2
 
-
+WAŻNE INFO  Obraz dockerowy Liquibase zawiera już zestaw sterowników JDBC do większości SQLowych baz.
 -------------------------------------------
 0. stan inicjalny, takie obiekty bazodanowe zastaliśmy na początku. Musimy utrwalić je w rejestrze
 
